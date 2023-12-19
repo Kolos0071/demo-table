@@ -1,33 +1,22 @@
 const model = setModel();
 let partIndexStart = 0;
 let partIndexEnd = 99;
+let renderedElements = []
+let deletedElements = [];
 const tbody = document.querySelector("tbody");
 
 const lastObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => { /* для каждого наблюдаемого элемента */
-        if (entry.isIntersecting) { /* если элемент находится в видимой части браузера */
-            /* то подгружаем очередные 10 постов */
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
             renderPart();
         }
 
     })
 });
 
-/* настраиваем наблюдение */
-const firstObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => { /* для каждого наблюдаемого элемента */
-        if (entry.isIntersecting) { /* если элемент находится в видимой части браузера */
-            console.log(123)
-        }
-        firstObserver.unobserve(entry.target)
-        // entry.target.remove()
-        firstObserver.observe(document.querySelector('.row:last-child'))
-    })
-});
-
 const everyObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => { /* для каждого наблюдаемого элемента */
-        if (entry.isIntersecting) { /* если элемент находится в видимой части браузера */
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
         }
     })
 });
@@ -60,21 +49,27 @@ function renderPart() {
         row.classList.add("row");
         row.dataset.id = i;
         tbody.append(row);
+        renderedElements.push(i)
     }
     if(document.querySelectorAll(".row").length > 200) {
         removePart()
     }
-
     partIndexStart +=100;
     partIndexEnd+=100;
+    console.log(renderedElements)
 }
 
 function removePart() {
     for(let i = 0; i <= 99; i ++) {
-            document.querySelectorAll('.row')[0].remove();
+        deletedElements.push( renderedElements.shift());
+        document.querySelectorAll('.row')[0].remove();
     }
+    console.log(deletedElements)
 }
 
 renderPart();
-firstObserver.observe(document.querySelector(".row:last-child"))
+document.addEventListener("scroll",e=>{
+    if(window.scrollY === 0) {
+    }
+})
 lastObserver.observe(document.querySelector(".loader"))
