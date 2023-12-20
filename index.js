@@ -87,11 +87,4 @@ function removePart(tail=false) {
 }
 
 renderPart();
-document.addEventListener("scroll",e=>{
-    if(window.scrollY === 50) {
-        for(let i = 0; i <= 99; i ++) {
-            // document.querySelector('.row:last-child').remove();
-        }
-    }
-})
 lastObserver.observe(document.querySelector(".loader"))
