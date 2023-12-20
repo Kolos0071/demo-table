@@ -1,8 +1,6 @@
 const model = setModel();
 let partIndexStart = 0;
 let partIndexEnd = 99;
-let renderedElements = []
-let deletedElements = [];
 const tbody = document.querySelector("tbody");
 
 const lastObserver = new IntersectionObserver(entries => {
@@ -17,6 +15,17 @@ const lastObserver = new IntersectionObserver(entries => {
 const everyObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
+            partIndexStart -=100;
+            partIndexEnd-=100;
+            everyObserver.unobserve(entry.target)
+            removePart(true)
+
+            for(let i = entry.target.dataset.id - 1; i>entry.target.dataset.id - 101; i-- ) {
+                renderRow(model[i], true);
+            }
+            if(entry.target.dataset.id - 101 > 0) {
+                everyObserver.observe(document.querySelector(".row"));
+            }
         }
     })
 });
@@ -33,43 +42,56 @@ function setModel() {
     return model;
 }
 
+function renderRow(modelItem, before = false) {
+    const row = document.createElement("tr");
+    const idCol = document.createElement("td");
+    idCol.innerText = modelItem.id;
+    const valueCol = document.createElement("td");
+    valueCol.innerText = modelItem.value;
+    const DescCol = document.createElement("td");
+    DescCol.innerText = modelItem.description;
+
+    row.append(idCol);
+    row.append(valueCol);
+    row.append(DescCol);
+    row.classList.add("row");
+    row.dataset.id = modelItem.id;
+
+    if(before) {
+        tbody.prepend(row);
+    }else {
+        tbody.append(row);
+    }
+}
+
 function renderPart() {
     for(let i = partIndexStart; i <= partIndexEnd; i++) {
-        const row = document.createElement("tr");
-        const idCol = document.createElement("td");
-        idCol.innerText = model[i].id;
-        const valueCol = document.createElement("td");
-        valueCol.innerText = model[i].value;
-        const DescCol = document.createElement("td");
-        DescCol.innerText = model[i].description;
-
-        row.append(idCol);
-        row.append(valueCol);
-        row.append(DescCol);
-        row.classList.add("row");
-        row.dataset.id = i;
-        tbody.append(row);
-        renderedElements.push(i)
+        renderRow(model[i]);
     }
     if(document.querySelectorAll(".row").length > 200) {
         removePart()
+        everyObserver.observe(document.querySelector(".row"));
     }
     partIndexStart +=100;
     partIndexEnd+=100;
-    console.log(renderedElements)
 }
 
-function removePart() {
+function removePart(tail=false) {
     for(let i = 0; i <= 99; i ++) {
-        deletedElements.push( renderedElements.shift());
-        document.querySelectorAll('.row')[0].remove();
+        if(tail) {
+            document.querySelector(".row:last-child").remove();
+        }else {
+            document.querySelectorAll('.row')[0].remove();
+        }
     }
-    console.log(deletedElements)
 }
 
 renderPart();
 document.addEventListener("scroll",e=>{
-    if(window.scrollY === 0) {
+    if(window.scrollY === 50) {
+        for(let i = 0; i <= 99; i ++) {
+            // document.querySelector('.row:last-child').remove();
+        }
     }
 })
 lastObserver.observe(document.querySelector(".loader"))
