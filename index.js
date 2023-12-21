@@ -1,6 +1,6 @@
 const model = setModel();
-let partIndexStart = 0;
-let partIndexEnd = 99;
+let counterDown = 0;
+let counterUp = 0;
 const tbody = document.querySelector("tbody");
 
 const lastObserver = new IntersectionObserver(entries => {
@@ -15,27 +15,14 @@ const lastObserver = new IntersectionObserver(entries => {
 const everyObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            partIndexStart -=100;
-            partIndexEnd-=100;
-            everyObserver.unobserve(entry.target)
-            removePart(true)
-
-            for(let i = entry.target.dataset.id - 21; i>entry.target.dataset.id - 121; i-- ) {
-                if(model[i]) {
-                    renderRow(model[i], true);
-                }
-            }
-            if(entry.target.dataset.id - 121 > 0) {
-                everyObserver.observe(document.querySelector(".row:nth-child(20)"));
-
-            }
+            renderPartBefore(entry.target);
         }
     })
 });
 
 function setModel() {
     const model = [];
-    for(let i= 0; i < 500000; i++) {
+    for(let i= 0; i < 500; i++) {
         model.push({
             id: i,
             value: Math.random() * 1000,
@@ -68,21 +55,39 @@ function renderRow(modelItem, before = false) {
 }
 
 function renderPart() {
-    for(let i = partIndexStart; i <= partIndexEnd; i++) {
-        renderRow(model[i]);
+    if(counterDown < model.length) {
+        for(let i = counterDown; i <= counterDown + 99; i++) {
+            renderRow(model[i]);
+        }
+        counterDown +=100;
+        if(document.querySelectorAll(".row").length > 200) {
+            removePart()
+            counterUp +=100;
+            everyObserver.observe(document.querySelector(".row:nth-child(20)"));
+        }
     }
-    if(document.querySelectorAll(".row").length > 200) {
-        removePart()
+}
+
+function renderPartBefore(target) {
+    if(counterUp > 0) {
+        everyObserver.unobserve(target)
+        removePart(true)
+        for(let i = counterUp-1; i>counterUp - 101; i-- ) {
+            if(model[i]) {
+                renderRow(model[i], true);
+            }
+        }
+        counterUp -=100;
         everyObserver.observe(document.querySelector(".row:nth-child(20)"));
+
     }
-    partIndexStart +=100;
-    partIndexEnd+=100;
 }
 
 function removePart(tail=false) {
     for(let i = 0; i <= 99; i ++) {
         if(tail) {
             document.querySelector(".row:last-child").remove();
+            counterDown --;
         }else {
             document.querySelectorAll('.row')[0].remove();
         }
