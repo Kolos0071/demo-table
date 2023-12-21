@@ -22,7 +22,7 @@ const everyObserver = new IntersectionObserver(entries => {
 
 function setModel() {
     const model = [];
-    for(let i= 0; i < 500; i++) {
+    for(let i= 0; i < 500000; i++) {
         model.push({
             id: i,
             value: Math.random() * 1000,
