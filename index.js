@@ -20,11 +20,14 @@ const everyObserver = new IntersectionObserver(entries => {
             everyObserver.unobserve(entry.target)
             removePart(true)
 
-            for(let i = entry.target.dataset.id - 1; i>entry.target.dataset.id - 101; i-- ) {
-                renderRow(model[i], true);
+            for(let i = entry.target.dataset.id - 21; i>entry.target.dataset.id - 121; i-- ) {
+                if(model[i]) {
+                    renderRow(model[i], true);
+                }
             }
-            if(entry.target.dataset.id - 101 > 0) {
-                everyObserver.observe(document.querySelector(".row"));
+            if(entry.target.dataset.id - 121 > 0) {
+                everyObserver.observe(document.querySelector(".row:nth-child(20)"));
+
             }
         }
     })
@@ -70,7 +73,7 @@ function renderPart() {
     }
     if(document.querySelectorAll(".row").length > 200) {
         removePart()
-        everyObserver.observe(document.querySelector(".row"));
+        everyObserver.observe(document.querySelector(".row:nth-child(20)"));
     }
     partIndexStart +=100;
     partIndexEnd+=100;
